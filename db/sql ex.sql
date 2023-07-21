@@ -1,3 +1,6 @@
+/* 
+실제로는 데이터 엑셀을 직접 넣어서 create table하였으며, 이하 내용은 기타 데이터정리, 확인 등의 목적을 위한 쿼리입니다.
+*/
 CREATE TABLE mytable (
   id INT PRIMARY KEY,
   myname VARCHAR(20)
