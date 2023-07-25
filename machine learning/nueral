@@ -1,0 +1,76 @@
+import pandas as pd
+import numpy as np
+import tensorflow as tf
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MinMaxScaler
+
+# 엑셀 파일에서 데이터 로드
+file_path = '/content/drive/MyDrive/life_data_a.xlsx'
+data = pd.read_excel(file_path)
+
+# 입력 변수와 출력 변수 분리
+X = data[['x1', ' x2', 'x3', 'x4', 'x5', 'x6', 'x7']]
+y = data['x8']
+
+# 데이터 정규화
+scaler = MinMaxScaler()
+X_scaled = scaler.fit_transform(X)
+
+# 학습 데이터와 테스트 데이터 분리
+X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
+
+# 인공 신경망 모델 정의
+model = tf.keras.models.Sequential()
+model.add(tf.keras.layers.Dense(32, activation='relu', input_shape=(7,)))
+model.add(tf.keras.layers.Dense(32, activation='relu'))
+model.add(tf.keras.layers.Dense(1))
+
+# 모델 컴파일 및 학습
+model.compile(optimizer='adam', loss='mean_squared_error')
+history = model.fit(X_train, y_train, epochs=100, batch_size=32, verbose=1)
+
+# 테스트 데이터로 예측 수행
+y_pred = model.predict(X_test)
+
+# 예측 결과 출력
+for i in range(len(X_test)):
+    print("실제값: {:.2f}, 예측값: {:.2f}".format(y_test.values[i], y_pred[i][0]))
+
+import matplotlib.pyplot as plt
+
+plt.plot(history.history['loss'])
+plt.title('Training Loss')
+plt.xlabel('Epoch')
+plt.ylabel('Loss')
+plt.show()
+
+plt.scatter(y_test, y_pred)
+plt.title('Actual vs. Predicted Values')
+plt.xlabel('Actual Values')
+plt.ylabel('Predicted Values')
+plt.show()
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Flatten y_test and y_pred arrays
+y_test = np.array(y_test).flatten()
+y_pred = np.array(y_pred).flatten()
+
+# Create a scatter plot
+plt.scatter(y_test, y_pred)
+plt.title('Actual vs. Predicted Values')
+plt.xlabel('Actual Values')
+plt.ylabel('Predicted Values')
+
+# Add a line indicating the linear relationship
+x_line = np.linspace(min(y_test), max(y_test), 100)
+y_line = x_line
+plt.plot(x_line, y_line, color='red')
+
+# Add error bars to visualize prediction errors
+errors = y_pred - y_test
+plt.errorbar(y_test, y_pred, yerr=errors, fmt='o', color='gray', alpha=0.5)
+
+plt.show()
+
